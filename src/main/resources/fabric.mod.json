@@ -3,20 +3,26 @@
 	"id": "genshinsmp",
 	"version": "${version}",
 	"name": "GenshinSMP",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "The Traveler's Realm SMP companion mod.",
 	"authors": [
-		"Me!"
+		"Lightning_11"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/Lightning11wins/travelers-realm",
+		"discord": "https://discord.gg/epicalliance",
+		"epic-views": "https://www.twitch.tv/eether17",
+		"hentent-youtube": "https://www.youtube.com/@HenIsHuman",
+		"hentent-twitch": "https://www.twitch.tv/henishuman"
 	},
-	"license": "CC0-1.0",
+	"license": "All Rights Reserved",
 	"icon": "assets/genshinsmp/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
 			"net.lightning.genshinsmp.GenshinSMP"
+		],
+		"client": [
+			"net.lightning.genshinsmp.GenshinSMPClient"
 		],
 		"fabric-datagen": [
 			"net.lightning.genshinsmp.GenshinSMPDataGenerator"
