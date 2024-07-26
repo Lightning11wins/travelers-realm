@@ -7,4 +7,4 @@
 # These are Windows script files and should use crlf
 *.bat           text eol=crlf
 
-*	text=auto eol=lf
+* text=auto eol=lf
