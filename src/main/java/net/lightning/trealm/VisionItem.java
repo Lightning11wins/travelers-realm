@@ -1,4 +1,4 @@
-package net.lightning.genshinsmp;
+package net.lightning.trealm;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.data.client.ItemModelGenerator;
@@ -8,9 +8,9 @@ import net.minecraft.data.client.TextureKey;
 import net.minecraft.data.client.TextureMap;
 import net.minecraft.util.Identifier;
 
-import static net.lightning.genshinsmp.GenshinSMP.MOD_ID;
+import static net.lightning.trealm.TravelersRealm.MOD_NAMESPACE;
 
-public class VisionItem extends ModItem {
+public class VisionItem extends ModItem implements RegistrableItem {
     public final Frame frame;
     public final Gem gem;
 
@@ -18,23 +18,25 @@ public class VisionItem extends ModItem {
         this(settings, Frame.OUTLANDER, Gem.MASTERLESS);
     }
     public VisionItem(Settings settings, Frame frame, Gem gem) {
-        super(settings);
+        super(settings, new RegistryData.Builder()
+            .identifier(getName(frame, gem))
+            .displayName(frame.displayName() + ' ' + gem.displayName() + " Vision")
+            .build());
         this.frame = frame;
         this.gem = gem;
-        super.setName(getName(frame, gem)).setDisplayName(frame.displayName() + ' ' + gem.displayName() + " VisionItem");
     }
 
     @Override
     public void registerModel(ItemModelGenerator itemModelGenerator) {
-        final Identifier layer1 = new Identifier(MOD_ID, this.frame.texture());
-        final Identifier layer0 = new Identifier(MOD_ID, this.gem.texture(this.frame.isHexagonal));
+        final Identifier layer1 = new Identifier(MOD_NAMESPACE, this.frame.texture());
+        final Identifier layer0 = new Identifier(MOD_NAMESPACE, this.gem.texture(this.frame.isHexagonal));
         final TextureMap textures = new TextureMap().put(TextureKey.LAYER0, layer0).put(TextureKey.LAYER1, layer1);
         Models.GENERATED_TWO_LAYERS.upload(ModelIds.getItemModelId(this), textures, itemModelGenerator.writer);
     }
 
     @Override
     public String toString() {
-        return this.displayName;
+        return this.registryData.displayName();
     }
 
     public static String getName(Frame frame, Gem gem) {

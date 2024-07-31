@@ -1,43 +1,44 @@
 {
-	"schemaVersion": 1,
-	"id": "genshinsmp",
-	"version": "${version}",
-	"name": "GenshinSMP",
-	"description": "The Traveler's Realm SMP companion mod.",
-	"authors": [
-		"Lightning_11"
-	],
-	"contact": {
-		"sources": "https://github.com/Lightning11wins/travelers-realm",
-		"discord": "https://discord.gg/epicalliance",
-		"epic-views": "https://www.twitch.tv/eether17",
-		"hentent-youtube": "https://www.youtube.com/@HenIsHuman",
-		"hentent-twitch": "https://www.twitch.tv/henishuman"
-	},
-	"license": "All Rights Reserved",
-	"icon": "assets/genshinsmp/icon.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"net.lightning.genshinsmp.GenshinSMP"
-		],
-		"client": [
-			"net.lightning.genshinsmp.GenshinSMPClient"
-		],
-		"fabric-datagen": [
-			"net.lightning.genshinsmp.GenshinSMPDataGenerator"
-		]
-	},
-	"mixins": [
-		"genshinsmp.mixins.json"
-	],
-	"depends": {
-		"fabricloader": ">=0.15.11",
-		"minecraft": "~1.20.4",
-		"java": ">=17",
-		"fabric-api": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
-	}
+    "schemaVersion": 1,
+    "id": "trealm",
+    "version": "${version}",
+    "name": "Travelers Realm",
+    "description": "The Traveler's Realm SMP companion mod.",
+    "authors": [
+        "Lightning_11",
+        "Eether17"
+    ],
+    "contact": {
+        "sources": "https://github.com/Lightning11wins/travelers-realm",
+        "discord": "https://discord.gg/epicalliance",
+        "epic-views": "https://www.twitch.tv/eether17",
+        "hentent-youtube": "https://www.youtube.com/@HenIsHuman",
+        "hentent-twitch": "https://www.twitch.tv/henishuman"
+    },
+    "license": "All Rights Reserved",
+    "icon": "assets/trealm/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+          "net.lightning.trealm.TravelersRealm"
+        ],
+        "client": [
+          "net.lightning.trealm.TravelersRealmClient"
+        ],
+        "fabric-datagen": [
+          "net.lightning.trealm.TravelersRealmDataGenerator"
+        ]
+    },
+    "mixins": [
+        "trealm.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=0.15.11",
+        "minecraft": "~1.20.4",
+        "java": ">=17",
+        "fabric-api": "*"
+    },
+    "suggests": {
+        "another-mod": "*"
+    }
 }

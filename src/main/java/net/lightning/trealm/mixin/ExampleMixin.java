@@ -1,4 +1,4 @@
-package net.lightning.genshinsmp.mixin;
+package net.lightning.trealm.mixin;
 
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;

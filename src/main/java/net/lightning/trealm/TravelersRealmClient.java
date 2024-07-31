@@ -1,10 +1,10 @@
-package net.lightning.genshinsmp;
+package net.lightning.trealm;
 
 import net.fabricmc.api.ClientModInitializer;
 
-import static net.lightning.genshinsmp.GenshinSMP.LOGGER;
+import static net.lightning.trealm.TravelersRealm.LOGGER;
 
-public class GenshinSMPClient implements ClientModInitializer {
+public class TravelersRealmClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
