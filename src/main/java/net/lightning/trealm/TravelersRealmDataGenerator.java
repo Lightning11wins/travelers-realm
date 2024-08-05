@@ -23,30 +23,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static net.lightning.trealm.TravelersRealm.MOD_NAMESPACE;
-import static net.lightning.trealm.RegistrableItem.RegistryData;
 
 public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
-    public static final List<RegistrableItem> ITEMS = new ArrayList<>();
+    public static final List<ItemRegistrable> ITEMS = new ArrayList<>();
+    private static final boolean VISION_INIT = VisionItem.init();
 
-    public static final ModItem HENSKULL = new ModItem(new FabricItemSettings().food(new FoodComponent.Builder()
+    public static final ItemRegistrable HENSKULL = new ItemData.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
             .hunger(3)
             .saturationModifier(1.2f)
             .snack()
             .alwaysEdible()
             .statusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 200), 1)
             .build()
-    ), new RegistryData.Builder().identifier("henskull").texture("item/henskull").displayName("HenSkull").build());
-    public static final ModItem FRAME1 = new ModItem(new RegistryData.Builder()
+    )).identifier("henskull").texture("item/henskull").displayName("HenSkull").build();
+    public static final ItemRegistrable FRAME1 = new ItemData.Builder()
             .identifier("frame1")
             .texture("item/vision/frame/socket1")
             .displayName("Hexagonal Frame")
-            .build());
-    public static final ModItem FRAME2 = new ModItem(new RegistryData.Builder()
+            .build();
+    public static final ItemRegistrable FRAME2 = new ItemData.Builder()
             .identifier("frame2")
             .texture("item/vision/frame/socket2")
             .displayName("Circular Frame")
-            .build());
-    public static final VisionItem[] VISION_ITEMS = VisionItem.constructAll();
+            .build();
 
 	@Override
 	public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
@@ -63,7 +62,7 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
 
         @Override
         public void generateTranslations(TranslationBuilder translationBuilder) {
-            for (RegistrableItem item : TravelersRealmDataGenerator.ITEMS) {
+            for (ItemRegistrable item : TravelersRealmDataGenerator.ITEMS) {
                 item.registerDisplayName(translationBuilder);
             }
         }
@@ -81,7 +80,7 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
 
         @Override
         public void generateItemModels(ItemModelGenerator itemModelGenerator) {
-            for (RegistrableItem item : TravelersRealmDataGenerator.ITEMS) {
+            for (ItemRegistrable item : TravelersRealmDataGenerator.ITEMS) {
                 item.registerModel(itemModelGenerator);
             }
         }

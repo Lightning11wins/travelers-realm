@@ -12,12 +12,12 @@ public class TravelersRealm implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-        for (RegistrableItem item : TravelersRealmDataGenerator.ITEMS) {
+        for (ItemRegistrable item : TravelersRealmDataGenerator.ITEMS) {
             item.registerItem();
         }
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register((e) -> {
-            for (RegistrableItem item : TravelersRealmDataGenerator.ITEMS) {
+            for (ItemRegistrable item : TravelersRealmDataGenerator.ITEMS) {
                 e.add(item);
             }
         });
