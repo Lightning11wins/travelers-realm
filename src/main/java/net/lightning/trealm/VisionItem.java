@@ -13,7 +13,7 @@ import static net.lightning.trealm.TravelersRealm.MOD_NAMESPACE;
 public class VisionItem extends ItemData {
     public static final int NUM_FRAMES = Frame.values().length;
     public static final int NUM_GEMS = Gem.values().length;
-    public static final VisionItem[] items = new VisionItem[NUM_FRAMES * NUM_GEMS];
+    public static final VisionItem[] ITEMS = new VisionItem[NUM_FRAMES * NUM_GEMS];
 
     public final Frame frame;
     public final Gem gem;
@@ -21,7 +21,7 @@ public class VisionItem extends ItemData {
     public VisionItem(Frame frame, Gem gem) {
         super(new Item(new FabricItemSettings()),
             new Identifier(MOD_NAMESPACE, getName(frame, gem)), null,
-            frame.displayName() + ' ' + gem.displayName() + " Vision"
+            frame.displayName + ' ' + gem.displayName + " Vision"
         );
         this.frame = frame;
         this.gem = gem;
@@ -45,7 +45,7 @@ public class VisionItem extends ItemData {
 
         for (Frame frame : frames) {
             for (Gem gem : gems) {
-                items[i++] = new VisionItem(frame, gem);
+                ITEMS[i++] = new VisionItem(frame, gem);
             }
         }
 
@@ -55,72 +55,65 @@ public class VisionItem extends ItemData {
         return frame.ordinal() * NUM_GEMS + gem.ordinal();
     }
     public static VisionItem getVisionItem(Frame frame, Gem gem) {
-        return items[index(frame, gem)];
+        return ITEMS[index(frame, gem)];
     }
 
     public enum Frame {
-        MONDSTADT(),
-        LIYUE(true),
-        INAZUMA(),
-        SUMERU(),
-        FONTAINE_OUSIA(),
-        FONTAINE_PNEUMA(),
-        NATLAN(),
-        SNEZHNAYA(),
-        SOCKET1(),
-        SOCKET2(true),
-        OUTLANDER();
+        MONDSTADT("Mondstadt"),
+        LIYUE("Liyue", true),
+        INAZUMA("Inazuma"),
+        SUMERU("Sumeru"),
+        FONTAINE_OUSIA("Fontaine Ousia"),
+        FONTAINE_PNEUMA("Fontaine Pneuma"),
+        NATLAN("Natlan"),
+        SNEZHNAYA("Snezhnaya"),
+        SOCKET1("Generic Circle"),
+        SOCKET2("Generic Square", true),
+        OUTLANDER("Outlander");
 
+        public final String displayName;
         public final boolean isHexagonal;
+        public final ItemData itemData;
 
-        Frame() {
-            this(false);
+        Frame(String displayName) {
+            this(displayName, false);
         }
-        Frame(boolean hexagonal) {
+        Frame(String displayName, boolean hexagonal) {
+            this.displayName = displayName;
             this.isHexagonal = hexagonal;
+            this.itemData = new ItemData.Builder()
+                .identifier(this.toString().toLowerCase() + "_frame")
+                .texture(this.texture())
+                .displayName(this.displayName + " Vision Frame")
+                .build();
         }
 
-        public String displayName() {
-            return switch (this) {
-                case MONDSTADT -> "Mondstadt";
-                case LIYUE -> "Liyue";
-                case INAZUMA -> "Inazuma";
-                case SUMERU -> "Sumeru";
-                case FONTAINE_OUSIA -> "Fontaine Ousia";
-                case FONTAINE_PNEUMA -> "Fontaine Pneuma";
-                case NATLAN -> "Natlan";
-                case SNEZHNAYA -> "Snezhnaya";
-                case SOCKET1 -> "Generic Circle";
-                case SOCKET2 -> "Generic Square";
-                case OUTLANDER -> "Outlander";
-            };
-        }
         public String texture() {
             return String.format("item/vision/frame/%s", this.name().toLowerCase());
         }
     }
     public enum Gem {
-        ANEMO,
-        GEO,
-        ELECTRO,
-        DENDRO,
-        HYDRO,
-        PYRO,
-        CRYO,
-        MASTERLESS;
+        ANEMO("Anemo"),
+        GEO("Geo"),
+        ELECTRO("Electro"),
+        DENDRO("Dendro"),
+        HYDRO("Hydro"),
+        PYRO("Pyro"),
+        CRYO("Cryo"),
+        MASTERLESS("Masterless");
 
-        public String displayName() {
-            return switch (this) {
-                case ANEMO -> "Anemo";
-                case GEO -> "Geo";
-                case ELECTRO -> "Electro";
-                case DENDRO -> "Dendro";
-                case HYDRO -> "Hydro";
-                case PYRO -> "Pyro";
-                case CRYO -> "Cryo";
-                case MASTERLESS -> "Masterless";
-            };
+        public final String displayName;
+        public final ItemData itemData;
+
+        Gem(String displayName) {
+            this.displayName = displayName;
+            this.itemData = new ItemData.Builder()
+                .identifier(this.toString().toLowerCase() + "_gem")
+                .texture(this.texture())
+                .displayName(this.displayName + " Vision Gem")
+                .build();
         }
+
         public String texture() {
             return texture(false);
         }

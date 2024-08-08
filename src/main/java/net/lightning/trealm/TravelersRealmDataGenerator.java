@@ -14,18 +14,21 @@ import net.minecraft.block.Blocks;
 import net.minecraft.data.client.BlockStateModelGenerator;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LeafEntry;
 import net.minecraft.loot.function.ApplyBonusLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
+import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryWrapper;
@@ -169,6 +172,23 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
 
         @Override
         public void generate(RecipeExporter exporter) {
+            final Item blank_frame = VisionItem.Frame.SOCKET1.itemData.item;
+            final RecipeCategory combat = RecipeCategory.COMBAT;
+            for (VisionItem.Frame frame : VisionItem.Frame.values()) {
+                final Item result = frame.itemData.item;
+                if (blank_frame == result) continue;
+                offerStonecuttingRecipe(exporter, combat, blank_frame, result);
+                offerStonecuttingRecipe(exporter, combat, result, blank_frame);
+            }
+
+            ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, blank_frame, 1)
+                .pattern("m m")
+                .pattern("   ")
+                .pattern("m m")
+                .input('m', Items.GOLD_INGOT)
+                .criterion(hasItem(Items.GOLD_INGOT), conditionsFromItem(Items.GOLD_INGOT))
+                .offerTo(exporter, new Identifier(MOD_NAMESPACE, "vision_frame"));
+
 //            TODO - Lightning: Add smithing recipes in loop.
 //            SmithingTransformRecipeJsonBuilder.create(
 //                    Ingredient.ofItems(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), Ingredient.ofItems(input), Ingredient.ofItems(Items.NETHERITE_INGOT), category, result
