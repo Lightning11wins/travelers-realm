@@ -3,24 +3,38 @@ package net.lightning.trealm;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.data.client.BlockStateModelGenerator;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.server.recipe.RecipeExporter;
-import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
-import net.minecraft.data.server.recipe.ShapelessRecipeJsonBuilder;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.item.Item;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.entry.LeafEntry;
+import net.minecraft.loot.function.ApplyBonusLootFunction;
+import net.minecraft.loot.function.SetCountLootFunction;
+import net.minecraft.loot.provider.number.UniformLootNumberProvider;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static net.lightning.trealm.TravelersRealm.MOD_NAMESPACE;
 
@@ -29,31 +43,92 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
     private static final boolean VISION_INIT = VisionItem.init();
 
     public static final ItemRegistrable HENSKULL = new ItemData.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
-            .hunger(3)
-            .saturationModifier(1.2f)
-            .snack()
-            .alwaysEdible()
-            .statusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 200), 1)
-            .build()
-    )).identifier("henskull").texture("item/henskull").displayName("HenSkull").build();
-    public static final ItemRegistrable FRAME1 = new ItemData.Builder()
-            .identifier("frame1")
-            .texture("item/vision/frame/socket1")
-            .displayName("Hexagonal Frame")
-            .build();
-    public static final ItemRegistrable FRAME2 = new ItemData.Builder()
-            .identifier("frame2")
-            .texture("item/vision/frame/socket2")
-            .displayName("Circular Frame")
-            .build();
+        .hunger(3)
+        .saturationModifier(1.2f)
+        .snack()
+        .alwaysEdible()
+        .statusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 200), 1)
+        .build()
+    )).identifier("henskull").texture("item/food/henskull").displayName("HenSkull").build();
+    public static final ItemRegistrable DISH_FURINA = new ItemData.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(6)
+        .saturationModifier(6)
+        .statusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 200), 1)
+        .build()
+    )).identifier("dish_furina").texture("item/food/dish_furina").displayName("Pour la Justice").build();
+    public static final ItemRegistrable DISH_NAHIDA = new ItemData.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(6)
+        .saturationModifier(6)
+        .statusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 200), 1)
+        .build()
+    )).identifier("dish_nahida").texture("item/food/dish_nahida").displayName("Halvamazd").build();
+    public static final ItemRegistrable DISH_AYAKA = new ItemData.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(6)
+        .saturationModifier(6)
+        .statusEffect(new StatusEffectInstance(StatusEffects.INSTANT_HEALTH, 1), 1)
+        .build()
+    )).identifier("dish_ayaka").texture("item/food/dish_ayaka").displayName("Snow on the Hearth").build();
+    public static final ItemRegistrable DISH_WANDERER = new ItemData.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(6)
+        .saturationModifier(6)
+        .statusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 200), 1)
+        .build()
+    )).identifier("dish_wanderer").texture("item/food/dish_wanderer").displayName("Shimi Chazuke").build();
 
-	@Override
+    public static final ItemRegistrable ALMOND = new ItemData.Builder().identifier("almond").texture("item/food/almond").displayName("Almonds").build();
+    public static final ItemRegistrable CRAB = new ItemData.Builder().identifier("crab").texture("item/food/crab").displayName("Crab").build();
+    public static final ItemRegistrable SHRIMP = new ItemData.Builder().identifier("shrimp").texture("item/food/shrimp").displayName("Shrimp").build();
+
+    public static final Block ELEMENTAL_ORE = registerBlock("elemental_ore",
+        new Block(Blocks.DEEPSLATE_DIAMOND_ORE.getSettings()));
+
+    private static Block registerBlock(String name, Block block) {
+        Registry.register(Registries.ITEM, new Identifier(MOD_NAMESPACE, name),
+            new BlockItem(block, new FabricItemSettings()));
+        return Registry.register(Registries.BLOCK, new Identifier(MOD_NAMESPACE, name), block);
+    }
+
+    @Override
 	public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
 		FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
 		pack.addProvider(ModModelProvider::new);
+        pack.addProvider(ModBlockTagProvider::new);
         pack.addProvider(ModLangProvider::new);
+        pack.addProvider(ModLootTableProvider::new);
         pack.addProvider(ModRecipeProvider::new);
 	}
+
+
+    public static class ModModelProvider extends FabricModelProvider {
+        public ModModelProvider(FabricDataOutput output) {
+            super(output);
+        }
+
+        @Override
+        public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
+            blockStateModelGenerator.registerSimpleCubeAll(ELEMENTAL_ORE);
+        }
+
+        @Override
+        public void generateItemModels(ItemModelGenerator itemModelGenerator) {
+            for (ItemRegistrable item : TravelersRealmDataGenerator.ITEMS) {
+                item.registerModel(itemModelGenerator);
+            }
+        }
+    }
+
+    public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
+        public ModBlockTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+            super(output, registriesFuture);
+        }
+
+        @Override
+        protected void configure(RegistryWrapper.WrapperLookup arg) {
+            final Block elementalOre = ELEMENTAL_ORE;
+            getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(elementalOre);
+            getOrCreateTagBuilder(BlockTags.NEEDS_DIAMOND_TOOL).add(elementalOre);
+        }
+    }
 
     public static class ModLangProvider extends FabricLanguageProvider {
         public ModLangProvider(FabricDataOutput data) {
@@ -68,21 +143,22 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
         }
     }
 
-    public static class ModModelProvider extends FabricModelProvider {
-        public ModModelProvider(FabricDataOutput output) {
-            super(output);
+    public class ModLootTableProvider extends FabricBlockLootTableProvider {
+        protected ModLootTableProvider(FabricDataOutput dataOutput) {
+            super(dataOutput);
         }
 
         @Override
-        public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
-
+        public void generate() {
+            final Block elementalOre = ELEMENTAL_ORE;
+            addDrop(elementalOre, copperLikeOreDrops(elementalOre, HENSKULL.asItem()));
         }
 
-        @Override
-        public void generateItemModels(ItemModelGenerator itemModelGenerator) {
-            for (ItemRegistrable item : TravelersRealmDataGenerator.ITEMS) {
-                item.registerModel(itemModelGenerator);
-            }
+        public LootTable.Builder copperLikeOreDrops(Block drop, Item item) {
+            LeafEntry.Builder<?> standardDrop = ItemEntry.builder(item)
+                .apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F)))
+                .apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE));
+            return dropsWithSilkTouch(drop, this.applyExplosionDecay(drop, standardDrop));
         }
     }
 
@@ -93,31 +169,12 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
 
         @Override
         public void generate(RecipeExporter exporter) {
-            ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, TravelersRealmDataGenerator.FRAME1, 1)
-                .pattern("m m")
-                .pattern("   ")
-                .pattern("m m")
-                .input('m', Items.GOLD_INGOT)
-                .criterion(hasItem(Items.GOLD_INGOT), conditionsFromItem(Items.GOLD_INGOT))
-                .offerTo(exporter, new Identifier(MOD_NAMESPACE, "circular_vision_frame"));
-
-            ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, TravelersRealmDataGenerator.FRAME2, 1)
-                .pattern(" m ")
-                .pattern("m m")
-                .pattern(" m ")
-                .input('m', Items.GOLD_INGOT)
-                .criterion(hasItem(Items.GOLD_INGOT), conditionsFromItem(Items.GOLD_INGOT))
-                .offerTo(exporter, new Identifier(MOD_NAMESPACE, "hexagonal_vision_frame"));
-
-            ShapelessRecipeJsonBuilder.create(RecipeCategory.COMBAT, TravelersRealmDataGenerator.FRAME1, 1)
-                    .input(TravelersRealmDataGenerator.FRAME2)
-                    .criterion(hasItem(TravelersRealmDataGenerator.FRAME2), conditionsFromItem(TravelersRealmDataGenerator.FRAME2))
-                    .offerTo(exporter, new Identifier(MOD_NAMESPACE, "blunt_vision_frame"));
-
-            ShapelessRecipeJsonBuilder.create(RecipeCategory.COMBAT, TravelersRealmDataGenerator.FRAME2, 1)
-                    .input(TravelersRealmDataGenerator.FRAME1)
-                    .criterion(hasItem(TravelersRealmDataGenerator.FRAME1), conditionsFromItem(TravelersRealmDataGenerator.FRAME1))
-                    .offerTo(exporter, new Identifier(MOD_NAMESPACE, "sharpen_vision_frame"));
+//            TODO - Lightning: Add smithing recipes in loop.
+//            SmithingTransformRecipeJsonBuilder.create(
+//                    Ingredient.ofItems(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), Ingredient.ofItems(input), Ingredient.ofItems(Items.NETHERITE_INGOT), category, result
+//                )
+//                .criterion("has_netherite_ingot", conditionsFromItem(Items.NETHERITE_INGOT))
+//                .offerTo(exporter, getItemPath(result) + "_smithing");
         }
     }
 }
