@@ -86,9 +86,9 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
     public static final ItemRegistrable CRAB = new ItemData.Builder().identifier("crab").texture("item/food/crab").displayName("Crab").build();
     public static final ItemRegistrable SHRIMP = new ItemData.Builder().identifier("shrimp").texture("item/food/shrimp").displayName("Shrimp").build();
 
-    public static final ItemRegistrable RAWELEMENTALORE = new ItemData.Builder().identifier("rawelementalore").texture("item/raw_elemental_ore").displayName("Raw Elemental Ore").build();
-    public static final ItemRegistrable ELEMENTALINGOT = new ItemData.Builder().identifier("elementalingot").texture("item/elemental_ingot").displayName("Elemental Ingot").build();
-    public static final ItemRegistrable ELEMENTALNUGGET = new ItemData.Builder().identifier("elementalnugget").texture("item/elemental_nugget").displayName("Elemental Nugget").build();
+    public static final ItemRegistrable RAW_ELEMENTAL_ORE = new ItemData.Builder().identifier("raw_elemental_ore").texture("item/raw_elemental_ore").displayName("Raw Elemental Ore").build();
+    public static final ItemRegistrable ELEMENTAL_INGOT = new ItemData.Builder().identifier("elemental_ingot").texture("item/elemental_ingot").displayName("Elemental Ingot").build();
+    public static final ItemRegistrable ELEMENTAL_NUGGET = new ItemData.Builder().identifier("elemental_nugget").texture("item/elemental_nugget").displayName("Elemental Nugget").build();
 
     public static final Block ELEMENTAL_ORE = registerBlock("elemental_ore",
         new Block(Blocks.DEEPSLATE_DIAMOND_ORE.getSettings()));
@@ -162,7 +162,7 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
         @Override
         public void generate() {
             final Block elementalOre = ELEMENTAL_ORE;
-            addDrop(elementalOre, copperLikeOreDrops(elementalOre, RAWELEMENTALORE.asItem()));
+            addDrop(elementalOre, copperLikeOreDrops(elementalOre, RAW_ELEMENTAL_ORE.asItem()));
         }
 
         public LootTable.Builder copperLikeOreDrops(Block drop, Item item) {
@@ -193,21 +193,21 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
                     .pattern("iii")
                     .pattern("i i")
                     .pattern("iii")
-                    .input('i', ELEMENTALINGOT)
-                    .criterion(hasItem(ELEMENTALINGOT), conditionsFromItem(ELEMENTALINGOT))
+                    .input('i', ELEMENTAL_INGOT)
+                    .criterion(hasItem(ELEMENTAL_INGOT), conditionsFromItem(ELEMENTAL_INGOT))
                     .offerTo(exporter, new Identifier(MOD_NAMESPACE, "vision_frame"));
 
-            ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ELEMENTALINGOT, 1)
+            ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ELEMENTAL_INGOT, 1)
                     .pattern("eee")
                     .pattern("eee")
                     .pattern("eee")
-                    .input('e', ELEMENTALNUGGET)
-                    .criterion(hasItem(ELEMENTALNUGGET), conditionsFromItem(ELEMENTALNUGGET))
+                    .input('e', ELEMENTAL_NUGGET)
+                    .criterion(hasItem(ELEMENTAL_NUGGET), conditionsFromItem(ELEMENTAL_NUGGET))
                     .offerTo(exporter, new Identifier(MOD_NAMESPACE, "elemental_ingot"));
 
-            ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ELEMENTALNUGGET, 9)
-                    .input(ELEMENTALINGOT)
-                    .criterion(hasItem(ELEMENTALINGOT), conditionsFromItem(ELEMENTALINGOT))
+            ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ELEMENTAL_NUGGET, 9)
+                    .input(ELEMENTAL_INGOT)
+                    .criterion(hasItem(ELEMENTAL_INGOT), conditionsFromItem(ELEMENTAL_INGOT))
                     .offerTo(exporter, new Identifier(MOD_NAMESPACE, "elemental_nugget"));
 
 //            TODO - Lightning: Add smithing recipes in loop.
@@ -217,11 +217,11 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
 //                .criterion("has_netherite_ingot", conditionsFromItem(Items.NETHERITE_INGOT))
 //                .offerTo(exporter, getItemPath(result) + "_smithing");
 
-            CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(RAWELEMENTALORE), RecipeCategory.MISC, ELEMENTALINGOT, 2.0F, 200)
-                    .criterion("has_raw_elemental_ore", conditionsFromItem(RAWELEMENTALORE))
+            CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(RAW_ELEMENTAL_ORE), RecipeCategory.MISC, ELEMENTAL_INGOT, 2.0F, 200)
+                    .criterion("has_raw_elemental_ore", conditionsFromItem(RAW_ELEMENTAL_ORE))
                     .offerTo(exporter);
 
-            CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(ELEMENTAL_ORE), RecipeCategory.MISC, ELEMENTALINGOT, 2.0F, 200)
+            CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(ELEMENTAL_ORE), RecipeCategory.MISC, ELEMENTAL_INGOT, 2.0F, 200)
                     .criterion("elemental_ore", conditionsFromItem(ELEMENTAL_ORE))
                     .offerTo(exporter);
 
