@@ -1,5 +1,9 @@
 package net.lightning.trealm;
 
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -12,6 +16,7 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.client.BlockStateModelGenerator;
 import net.minecraft.data.client.ItemModelGenerator;
@@ -22,10 +27,12 @@ import net.minecraft.data.server.recipe.SmithingTransformRecipeJsonBuilder;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LeafEntry;
@@ -40,10 +47,19 @@ import net.minecraft.registry.RegistryBuilder;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import static net.lightning.trealm.TravelersRealm.MOD_NAMESPACE;
@@ -94,6 +110,7 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
     public static final ItemData ELEMENTAL_ORE_BLOCK = new ItemData.Builder().identifier("elemental_ore_block").texture("item/elemental_block").displayName("Block of Elemental Ingots").build();
     public static final ItemData RAW_ELEMENTAL_ORE = new ItemData.Builder().identifier("raw_elemental_ore").texture("item/raw_elemental_ore").displayName("Raw Elemental Ore").build();
     public static final ItemData RAW_ELEMENTAL_ORE_BLOCK = new ItemData.Builder().identifier("raw_elemental_ore_block").texture("item/raw_elemental_ore_block").displayName("Raw Elemental Ore Block").build();
+    public static final ItemData ABYSS_STARTER_ITEM = new ItemData.Builder().identifier("abyss_starter_item").texture("abyss_starter_item").displayName("abyss_starter_item").build();
 
     public static final Block ELEMENTAL_ORE = registerBlock("elemental_ore", new Block(Blocks.DEEPSLATE_DIAMOND_ORE.getSettings()));
 
@@ -118,6 +135,7 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
     public void buildRegistry(RegistryBuilder registryBuilder) {
         registryBuilder.addRegistry(RegistryKeys.CONFIGURED_FEATURE, ModWorldGenerator.ModConfiguredFeatures::boostrap);
         registryBuilder.addRegistry(RegistryKeys.PLACED_FEATURE, ModWorldGenerator.ModPlacedFeatures::boostrap);
+        registryBuilder.addRegistry(RegistryKeys.DIMENSION_TYPE, ModDimensions::bootstrapType);
     }
 
 
