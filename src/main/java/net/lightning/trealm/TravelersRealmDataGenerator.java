@@ -84,6 +84,46 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
         .statusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 200), 1)
         .build()
     )).identifier("dish_wanderer").texture("item/food/dish_wanderer").displayName("Shimi Chazuke").build();
+    public static final ItemData DRINK_FONTA = new ItemData.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(2)
+        .saturationModifier(2)
+        .statusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200), 1)
+        .build()
+    )).identifier("drink_fonta").texture("item/food/drink_fonta").displayName("Fonta").build();
+    //Fonta//
+    public static final ItemData DISH_PADDYPUDDING = new ItemData.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(3)
+        .saturationModifier(3)
+        .statusEffect(new StatusEffectInstance(StatusEffects.HASTE, 400,1), 1)
+        .snack()
+        .build()
+    )).identifier("dish_paddypudding").texture("item/food/dish_paddypudding").displayName("Padisarah Pudding").build();
+    public static final ItemData DISH_GARLIC_BAGOFETTES = new ItemData.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(4)
+        .saturationModifier(4)
+        .statusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 300), 1)
+        .build()
+    )).identifier("dish_garlic_bagofettes").texture("item/food/dish_garlic_bagofettes").displayName("Garlic Baguettes").build();
+    public static final ItemData DISH_SHAWARMA_WRAP = new ItemData.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(6)
+        .saturationModifier(6)
+        .statusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 200), 1)
+        .build()
+    )).identifier("dish_shwaps").texture("item/food/dish_shwaps").displayName("Shawarma Wrap").build();
+    public static final ItemData DRINK_TASTETHERAINBOW = new ItemData.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(3)
+        .saturationModifier(3)
+        .statusEffect(new StatusEffectInstance(StatusEffects.SPEED, 400,1), 1)
+        .build()
+    )).identifier("drink_tastetherainbow").texture("item/food/drink_tastetherainbow").displayName("Rainbow Aster").build();
+    public static final ItemData GOLDEN_TEMPTATION = new ItemData.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+            .hunger(4)
+            .snack()
+            .saturationModifier(4)
+            .statusEffect(new StatusEffectInstance(StatusEffects.HASTE, 400,2), 1)
+            .build()
+    )).identifier("goldentemptation").texture("item/food/goldentemptation").displayName("Golden Temptation").build();
+    
 
     public static final ItemData ALMOND = new ItemData.Builder().identifier("almond").texture("item/food/almond").displayName("Almonds").build();
     public static final ItemData CRAB = new ItemData.Builder().identifier("crab").texture("item/food/crab").displayName("Crab").build();
