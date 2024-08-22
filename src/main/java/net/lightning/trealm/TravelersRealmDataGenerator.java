@@ -9,10 +9,16 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+import net.lightning.trealm.AdeptusStoveBlock.AdeptalStoveScreenHandler;
+import net.lightning.trealm.AdeptusStoveBlock.AdeptusStoveBlock;
+import net.lightning.trealm.AdeptusStoveBlock.AdeptusStoveBlockEntity;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.data.client.BlockStateModelGenerator;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.server.recipe.CookingRecipeJsonBuilder;
@@ -40,6 +46,7 @@ import net.minecraft.registry.RegistryBuilder;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -88,6 +95,7 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
     public static final ItemData ALMOND = new ItemData.Builder().identifier("almond").texture("item/food/almond").displayName("Almonds").build();
     public static final ItemData CRAB = new ItemData.Builder().identifier("crab").texture("item/food/crab").displayName("Crab").build();
     public static final ItemData SHRIMP = new ItemData.Builder().identifier("shrimp").texture("item/food/shrimp").displayName("Shrimp").build();
+    public static final ItemData FLOUR = new ItemData.Builder().identifier("flour").texture("item/food/flour").displayName("Flour").build();
 
     public static final ItemData ELEMENTAL_INGOT = new ItemData.Builder().identifier("elemental_ingot").texture("item/elemental_ingot").displayName("Elemental Ingot").build();
     public static final ItemData ELEMENTAL_NUGGET = new ItemData.Builder().identifier("elemental_nugget").texture("item/elemental_nugget").displayName("Elemental Nugget").build();
@@ -96,6 +104,18 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
     public static final ItemData RAW_ELEMENTAL_ORE_BLOCK = new ItemData.Builder().identifier("raw_elemental_ore_block").texture("item/raw_elemental_ore_block").displayName("Raw Elemental Ore Block").build();
 
     public static final Block ELEMENTAL_ORE = registerBlock("elemental_ore", new Block(Blocks.DEEPSLATE_DIAMOND_ORE.getSettings()));
+
+    public static final Block ADEPTUS_STOVE_BLOCK = registerBlock("adeptus_stove", new AdeptusStoveBlock(Blocks.CAULDRON.getSettings()));
+
+
+    public static final BlockEntityType<AdeptusStoveBlockEntity> ADEPTUS_STOVE_BLOCK_ENTITY =
+            Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(MOD_NAMESPACE, "adeptal_cooking_be"),
+                    FabricBlockEntityTypeBuilder.create(AdeptusStoveBlockEntity::new,
+                            ADEPTUS_STOVE_BLOCK).build());
+
+    public static final ScreenHandlerType<AdeptalStoveScreenHandler> ADEPTAL_STOVE_SCREEN_HANDLER =
+            Registry.register(Registries.SCREEN_HANDLER, new Identifier(MOD_NAMESPACE, "adeptal_cooking"),
+                    new ExtendedScreenHandlerType<>(AdeptalStoveScreenHandler::new));
 
     private static Block registerBlock(String name, Block block) {
         Registry.register(Registries.ITEM, new Identifier(MOD_NAMESPACE, name),
@@ -129,6 +149,7 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
         @Override
         public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
             blockStateModelGenerator.registerSimpleCubeAll(ELEMENTAL_ORE);
+            blockStateModelGenerator.registerSimpleState(ADEPTUS_STOVE_BLOCK);
         }
 
         @Override
@@ -149,6 +170,9 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
             final Block elementalOre = ELEMENTAL_ORE;
             getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(elementalOre);
             getOrCreateTagBuilder(BlockTags.NEEDS_DIAMOND_TOOL).add(elementalOre);
+            final Block adeptusStove = ADEPTUS_STOVE_BLOCK;
+            getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(adeptusStove);
+            getOrCreateTagBuilder(BlockTags.NEEDS_STONE_TOOL).add(adeptusStove);
         }
     }
 
@@ -174,6 +198,8 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
         public void generate() {
             final Block elementalOre = ELEMENTAL_ORE;
             addDrop(elementalOre, copperLikeOreDrops(elementalOre, RAW_ELEMENTAL_ORE.asItem()));
+            final Block adeptusStove = ADEPTUS_STOVE_BLOCK;
+            addDrop(adeptusStove, drops(adeptusStove, ADEPTUS_STOVE_BLOCK.asItem()));
         }
 
         public LootTable.Builder copperLikeOreDrops(Block drop, Item item) {
@@ -271,7 +297,6 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
                     .criterion("has_" + gem.identifier.getPath(), conditionsFromItem(gem))
                     .offerTo(exporter, getItemPath(vision) + "_embedding");
             }
-
         }
     }
 }
