@@ -2,6 +2,7 @@ package net.lightning.trealm;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
+import net.minecraft.block.BlockState;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
@@ -26,8 +27,6 @@ import net.minecraft.world.gen.placementmodifier.SquarePlacementModifier;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
-import static net.lightning.trealm.TravelersRealmDataGenerator.ELEMENTAL_ORE;
 
 public class ModWorldGenerator extends FabricDynamicRegistryProvider {
     public ModWorldGenerator(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
@@ -66,7 +65,8 @@ public class ModWorldGenerator extends FabricDynamicRegistryProvider {
 
         public static void boostrap(Registerable<ConfiguredFeature<?, ?>> context) {
             final RuleTest deepslateReplaceable = new TagMatchRuleTest(BlockTags.DEEPSLATE_ORE_REPLACEABLES);
-            final List<OreFeatureConfig.Target> overworldElementalOres = List.of(OreFeatureConfig.createTarget(deepslateReplaceable, ELEMENTAL_ORE.getDefaultState()));
+            final BlockState elementalOre = TravelersRealmDataGenerator.DEEPSLATE_ELEMENTAL_ORE.block.getDefaultState();
+            final List<OreFeatureConfig.Target> overworldElementalOres = List.of(OreFeatureConfig.createTarget(deepslateReplaceable, elementalOre));
             context.register(ELEMENTAL_ORE_KEY, new ConfiguredFeature<>(Feature.ORE, new OreFeatureConfig(overworldElementalOres, 6)));
         }
 

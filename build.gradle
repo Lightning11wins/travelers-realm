@@ -16,7 +16,6 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
-	maven {url = "https://maven.kyrptonaught.dev"}
 }
 
 fabricApi {
@@ -31,22 +30,26 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	modImplementation 'net.kyrptonaught:customportalapi:0.0.1-beta64-1.20.4'
-	include 'net.kryrptonaught:customportalapi:0.0.1-beta64-1.20.4'
-	
 }
 
 processResources {
-	inputs.property "version", project.version
+	inputs.property 'version', project.version
 
-	filesMatching("fabric.mod.json") {
+	filesMatching('fabric.mod.json') {
 		expand "version": project.version
 	}
 }
 
 tasks.withType(JavaCompile).configureEach {
 	it.options.release = 17
+}
+
+tasks.withType(JavaExec).configureEach {
+    jvmArgs '-Dfile.encoding=UTF-8'
+}
+
+tasks.withType(Test).configureEach {
+    jvmArgs '-Dfile.encoding=UTF-8'
 }
 
 java {
@@ -60,7 +63,7 @@ java {
 }
 
 jar {
-	from("LICENSE") {
+	from('LICENSE') {
 		rename { "${it}_${project.base.archivesName.get()}"}
 	}
 }
@@ -68,7 +71,7 @@ jar {
 // configure the maven publication
 publishing {
 	publications {
-		create("mavenJava", MavenPublication) {
+		create('mavenJava', MavenPublication) {
 			artifactId = project.archives_base_name
 			from components.java
 		}
