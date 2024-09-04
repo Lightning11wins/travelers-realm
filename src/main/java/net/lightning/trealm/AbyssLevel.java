@@ -12,10 +12,10 @@ public class AbyssLevel {
     public static final int MIN_COMBAT_ROOMS = 3, MAX_COMBAT_ROOMS = 5;
     public static final int MIN_TRAP_ROOMS = 2, MAX_TRAP_ROOMS = 8;
     public static final int MIN_LOOT_ROOMS = 2, MAX_LOOT_ROOMS = 5;
-    public static final int INITIAL_HALLWAY_DECAY = 32, HALLWAY_DECAY_SOFT_THRESHOLD = INITIAL_HALLWAY_DECAY / 2;
+    public static final int INITIAL_HALLWAY_DECAY = 24, HALLWAY_DECAY_SOFT_THRESHOLD = INITIAL_HALLWAY_DECAY / 3;
 
     public final long seed;
-    public final Random random;
+    public final Random random, randomVariant;
     public final Map<Coordinates, Tile> level = new HashMap<>();
     public final List<Coordinates> gaps = new ArrayList<>(64);
     public int minX, minZ, maxX, maxZ;
@@ -24,11 +24,12 @@ public class AbyssLevel {
     public Tile[][] grid;
 
     public AbyssLevel() {
-        this(System.nanoTime());
+        this(new Random(System.nanoTime()).nextInt());
     }
     public AbyssLevel(long seed) {
         this.seed = seed;
         this.random = new Random(seed);
+        this.randomVariant = new Random(seed);
         System.out.printf("Seed: %d\n", seed);
     }
 
@@ -63,9 +64,9 @@ public class AbyssLevel {
             case 3:
                 orientation =
                     !north ? Tile.Orientation.UP :
-                        !east ?  Tile.Orientation.RIGHT :
-                            !south ? Tile.Orientation.DOWN :
-                                Tile.Orientation.LEFT;
+                    !east ?  Tile.Orientation.RIGHT :
+                    !south ? Tile.Orientation.DOWN :
+                             Tile.Orientation.LEFT;
                 entrances = Structure.Entrances.THREE_WAY;
                 break;
             case 2:
@@ -78,18 +79,18 @@ public class AbyssLevel {
                 else /*if (north && south)*/ orientation = Tile.Orientation.RIGHT;
                 if (entrances == null) entrances = Structure.Entrances.STRAIGHT;
                 break;
-            case 1:
+            case 1, 0:
                 orientation =
                     south ? Tile.Orientation.UP :
-                        west ?  Tile.Orientation.RIGHT :
-                            north ? Tile.Orientation.DOWN :
-                                Tile.Orientation.LEFT;
+                    west ?  Tile.Orientation.RIGHT :
+                    north ? Tile.Orientation.DOWN :
+                            Tile.Orientation.LEFT;
                 entrances = Structure.Entrances.DEAD_END;
                 break;
             default: throw new AssertionError("Unexpected entrance count: " + entranceCount);
         }
 
-        return this.generateTile(coordinates, new Tile(orientation, Structure.random(structureType, entrances)));
+        return this.generateTile(coordinates, new Tile(orientation, Structure.random(structureType, entrances, this.randomVariant)));
     }
     public AbyssLevel generateTile(Coordinates coordinates, Tile tile) {
         final int x = coordinates.x, z = coordinates.z;
@@ -112,7 +113,6 @@ public class AbyssLevel {
         int combatRooms = random.nextInt(MIN_COMBAT_ROOMS, MAX_COMBAT_ROOMS);
         int trapRooms = random.nextInt(MIN_TRAP_ROOMS, MAX_TRAP_ROOMS);
         int puzzleRooms = random.nextInt(MIN_LOOT_ROOMS, MAX_LOOT_ROOMS);
-        System.out.printf("Combat rooms: %s, Trap rooms: %s, Puzzle rooms: %s\n", combatRooms, trapRooms, puzzleRooms);
 
         this.generateTile(new Coordinates(0, 0), Structure.Type.ROOM_START);
 
@@ -148,7 +148,7 @@ public class AbyssLevel {
             final Structure.Type[] types = {Structure.Type.HALLWAY, null, null, null};
             if (combatRooms > 0) types[i++] = Structure.Type.ROOM_COMBAT;
             if (trapRooms > 0) types[i++] = Structure.Type.ROOM_TRAP;
-            if (puzzleRooms > 0) types[i++] = Structure.Type.ROOM_PUZZLE;
+            if (puzzleRooms > 0) types[i++] = Structure.Type.ROOM_LOOT;
             if (i == 1) {
                 this.isValid = true;
                 this.hallwayDecay = INITIAL_HALLWAY_DECAY;
@@ -160,7 +160,7 @@ public class AbyssLevel {
             switch (type) {
                 case ROOM_COMBAT -> combatRooms--;
                 case ROOM_TRAP -> trapRooms--;
-                case ROOM_PUZZLE -> puzzleRooms--;
+                case ROOM_LOOT -> puzzleRooms--;
             }
 
             this.generateTile(coordinates, type);
@@ -214,18 +214,46 @@ public class AbyssLevel {
     public static AbyssLevel genLevel() {
         AbyssLevel level;
         do {
-            level = new AbyssLevel(539753319104501L).generateDungeon();
+            level = new AbyssLevel().generateDungeon();
         } while (!level.isValid);
         level.toGrid();
         return level;
     }
     public static void main(String[] args) {
         final long startTime = System.nanoTime();
-        final AbyssLevel level = genLevel();
+        AbyssLevel level = null;
+        for (int i = 0; i < 2048; i++) {
+            level = genLevel();
+        }
         final long endTime = System.nanoTime();
 
-        System.out.println(stringifyGrid(level.toGrid(), level));
-        System.out.printf("Execution time: %.4f milliseconds\n", (double) (endTime - startTime) / 1_000_000);
+//        final int[] genCount = Structure.genCount;
+//        final int totalHallways = genCount[0] + genCount[1] + genCount[2] + genCount[3] + genCount[4];
+//        final int totalStartRooms = genCount[5] + genCount[6] + genCount[7] + genCount[8] + genCount[9];
+//        final int totalCombatRooms = genCount[10] + genCount[11] + genCount[12] + genCount[13] + genCount[14];
+//        final int totalLootRooms = genCount[15] + genCount[16] + genCount[17] + genCount[18] + genCount[19];
+//        final int totalTrapRooms = genCount[20] + genCount[21] + genCount[22] + genCount[23] + genCount[24];
+//        final int totalEndRooms = genCount[25] + genCount[26] + genCount[27] + genCount[28] + genCount[29];
+//        final float total = totalHallways + totalStartRooms + totalCombatRooms + totalLootRooms + totalTrapRooms + totalEndRooms;
+//
+//        final int total_4 = genCount[0] + genCount[5] + genCount[10] + genCount[15] + genCount[20];
+//        final int total_3 = genCount[1] + genCount[6] + genCount[11] + genCount[16] + genCount[21];
+//        final int total_s = genCount[2] + genCount[7] + genCount[12] + genCount[17] + genCount[22];
+//        final int total_t = genCount[3] + genCount[8] + genCount[13] + genCount[18] + genCount[23];
+//        final int total_1 = genCount[4] + genCount[9] + genCount[14] + genCount[19] + genCount[24];
+//
+//        StringBuilder sb = new StringBuilder("  4,     3,     s,     t,     1\n");
+//        Formatter formatter = new Formatter(sb);
+//        formatter.format("%05d, %05d, %05d, %05d, %05d : %.3f HALLWAY\n", genCount[0], genCount[1], genCount[2], genCount[3], genCount[4], totalHallways / total);
+//        formatter.format("%05d, %05d, %05d, %05d, %05d : %.3f ROOM_START\n", genCount[5], genCount[6], genCount[7], genCount[8], genCount[9], totalStartRooms / total);
+//        formatter.format("%05d, %05d, %05d, %05d, %05d : %.3f ROOM_COMBAT\n", genCount[10], genCount[11], genCount[12], genCount[13], genCount[14], totalCombatRooms / total);
+//        formatter.format("%05d, %05d, %05d, %05d, %05d : %.3f ROOM_LOOT\n", genCount[15], genCount[16], genCount[17], genCount[18], genCount[19], totalLootRooms / total);
+//        formatter.format("%05d, %05d, %05d, %05d, %05d : %.3f ROOM_TRAP\n", genCount[20], genCount[21], genCount[22], genCount[23], genCount[24], totalTrapRooms / total);
+//        formatter.format("%05d, %05d, %05d, %05d, %05d : %.3f ROOM_END\n", genCount[25], genCount[26], genCount[27], genCount[28], genCount[29], totalEndRooms / total);
+//        formatter.format("%.3f, %.3f, %.3f, %.3f, %.3f\n", total_4 / total, total_3 / total, total_s / total, total_t / total, total_1 / total);
+//        sb.append(stringifyGrid(level.toGrid(), level)).append('\n');
+//        formatter.format("Execution time: %.4f milliseconds\n", (double) (endTime - startTime) / 1_000_000);
+//        System.out.print(sb);
     }
 
     public static class Tile {
@@ -274,7 +302,7 @@ public class AbyssLevel {
                 case ROOM_START -> sb.append("\u001B[32m");  // green
                 case ROOM_COMBAT -> sb.append("\u001B[31m"); // red
                 case ROOM_TRAP -> sb.append("\u001B[34m");   // blue
-                case ROOM_PUZZLE -> sb.append("\u001B[33m"); // yellow
+                case ROOM_LOOT -> sb.append("\u001B[33m"); // yellow
                 case ROOM_END -> sb.append("\u001B[35m");    // magenta
             }
 
@@ -311,7 +339,7 @@ public class AbyssLevel {
             HALLWAY(),
             ROOM_START(),
             ROOM_COMBAT(),
-            ROOM_PUZZLE(),
+            ROOM_LOOT(),
             ROOM_TRAP(),
             ROOM_END(),
         }
@@ -334,6 +362,26 @@ public class AbyssLevel {
             }
         }
 
+        public static final int[] roomCounts = {
+         // 4, 3, s, t, 1
+            1, 1, 3, 1, 2, // HALLWAY
+            0, 0, 0, 0, 0, // ROOM_START
+            4, 0, 0, 0, 0, // ROOM_COMBAT
+            2, 0, 0, 0, 0, // ROOM_LOOT
+            0, 0, 0, 0, 0, // ROOM_TRAP
+            0, 0, 0, 0, 0, // ROOM_END
+        };
+
+//        public static final int[] genCount = {
+//            // 4, 3, s, t, 1
+//            0, 0, 0, 0, 0, // HALLWAY
+//            0, 0, 0, 0, 0, // ROOM_START
+//            0, 0, 0, 0, 0, // ROOM_COMBAT
+//            0, 0, 0, 0, 0, // ROOM_LOOT
+//            0, 0, 0, 0, 0, // ROOM_TRAP
+//            0, 0, 0, 0, 0, // ROOM_END
+//        };
+
         public final Type type;
         public final Entrances entrances;
         public final String name;
@@ -344,8 +392,12 @@ public class AbyssLevel {
             this.entrances = entrances;
         }
 
-        public static Structure random(Type type, Entrances entrances) {
-            return new Structure(type, entrances, null);
+        public static Structure random(Type type, Entrances entrances, Random random) {
+//            genCount[type.ordinal() * 5 + entrances.ordinal()]++;
+            final int roomCount = roomCounts[type.ordinal() * 5 + entrances.ordinal()];
+            return new Structure(type, entrances, (roomCount == 0) ? "invalid" :
+                String.format("%s_%s_%d", type.toString().toLowerCase(), entrances.toString().toLowerCase(), random.nextInt(roomCount))
+            );
         }
     }
     public static class Coordinates {
