@@ -395,7 +395,7 @@ public class AbyssLevel {
         public static Structure random(Type type, Entrances entrances, Random random) {
 //            genCount[type.ordinal() * 5 + entrances.ordinal()]++;
             final int roomCount = roomCounts[type.ordinal() * 5 + entrances.ordinal()];
-            return new Structure(type, entrances, (roomCount == 0) ? null :
+            return new Structure(type, entrances, (roomCount == 0) ? "invalid" :
                 String.format("%s_%s_%d", type.toString().toLowerCase(), entrances.toString().toLowerCase(), random.nextInt(roomCount))
             );
         }
