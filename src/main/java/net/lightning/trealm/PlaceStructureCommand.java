@@ -1,7 +1,6 @@
 package net.lightning.trealm;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.lightning.trealm.AbyssLevel.Tile;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -23,7 +22,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 import static net.lightning.trealm.TravelersRealm.MOD_NAMESPACE;
-
+import static net.minecraft.util.BlockRotation.CLOCKWISE_180;
+import static net.minecraft.util.BlockRotation.CLOCKWISE_90;
+import static net.minecraft.util.BlockRotation.COUNTERCLOCKWISE_90;
+import static net.minecraft.util.BlockRotation.NONE;
 
 public class PlaceStructureCommand {
 
@@ -39,25 +41,31 @@ public class PlaceStructureCommand {
                 placeAbyssLevel(context.getSource().getWorld());
                 return 1;
             }));
-        dispatcher.register(CommandManager.literal("startwave")
-                .executes(context -> {
-                    startwave(context.getSource().getWorld());
-                            return 1;
-                }));
+        dispatcher.register(CommandManager.literal("startwave").executes(context -> {
+            startwave(context.getSource().getWorld());
+            return 1;
+        }));
     }
 
     public static long placeAbyssLevel(ServerWorld world) {
-        AbyssLevel abyssLevel = AbyssLevel.genLevel();
-        Tile[][] level = abyssLevel.toGrid();
+        final AbyssLevel abyssLevel = AbyssLevel.genLevel();
+        final AbyssLevel.Tile[][] level = abyssLevel.toGrid();
 
         for (int x = 0; x < level.length; x++){
             for (int z = 0; z < level[0].length; z++) {
-                Tile currentTile = level[x][z];
+                final AbyssLevel.Tile currentTile = level[x][z];
                 if (currentTile != null) {
-                    int xTiles = x + ((currentTile.orientation.ordinal() + 1) / 2 % 2);
-                    int zTiles = z + (currentTile.orientation.ordinal() / 2 % 2);
-                    BlockPos pos = new BlockPos(ROOM_SIZE * xTiles, 200, ROOM_SIZE * zTiles);
-                    PlaceStructureCommand.placeStructure(world, currentTile.structure.name, pos, rotation);
+                    final int direction = currentTile.orientation.ordinal();
+                    final int xTiles = x + ((direction + 1) / 2 % 2);
+                    final int zTiles = z + (direction / 2 % 2);
+                    final BlockPos pos = new BlockPos(PlaceStructureCommand.ROOM_SIZE * xTiles, 200, PlaceStructureCommand.ROOM_SIZE * zTiles);
+                    final BlockRotation blockRotation = switch (currentTile.orientation) {
+                        case UP, UP_FLIPPED -> NONE;
+                        case RIGHT, LEFT_FLIPPED -> CLOCKWISE_90;
+                        case DOWN, DOWN_FLIPPED -> CLOCKWISE_180;
+                        case LEFT, RIGHT_FLIPPED -> COUNTERCLOCKWISE_90;
+                    };
+                    PlaceStructureCommand.placeStructure(world, currentTile.structure.name, pos, blockRotation);
                 }
             }
         }
@@ -65,12 +73,12 @@ public class PlaceStructureCommand {
     }
 
     public static int placeStructure(ServerWorld world, String structureId, BlockPos pos, BlockRotation rotation) {
-        StructureTemplateManager structureManager = world.getStructureTemplateManager();
-        Identifier structureIdentifier = new Identifier(MOD_NAMESPACE, structureId);
-        StructureTemplate template = structureManager.getTemplate(structureIdentifier).orElse(null);
+        final StructureTemplateManager structureManager = world.getStructureTemplateManager();
+        final Identifier structureIdentifier = new Identifier(MOD_NAMESPACE, structureId);
+        final StructureTemplate template = structureManager.getTemplate(structureIdentifier).orElse(null);
 
         if (template != null) {
-            StructurePlacementData placementData = new StructurePlacementData();
+            final StructurePlacementData placementData = new StructurePlacementData();
             placementData.setRotation(rotation);
             template.place(world, pos, pos, placementData, world.getRandom(), 2);
 
@@ -80,8 +88,8 @@ public class PlaceStructureCommand {
     }
 
     public static int startwave(ServerWorld world){
-        EntityType<?> entityType = EntityType.ZOMBIE;
-        MobEntity mobEntity = (MobEntity) entityType.create(world);
+        final EntityType<?> entityType = EntityType.ZOMBIE;
+        final MobEntity mobEntity = (MobEntity) entityType.create(world);
 
         if (mobEntity != null) {
             // Custom Attributes
@@ -94,30 +102,30 @@ public class PlaceStructureCommand {
             mobEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 6000, 1));
             mobEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 6000, 2));
 
-            ItemStack sword = new ItemStack(Items.DIAMOND_SWORD);
+            final ItemStack sword = new ItemStack(Items.DIAMOND_SWORD);
             sword.addEnchantment(Enchantments.SHARPNESS, 5); // Sharpness V
             sword.addEnchantment(Enchantments.UNBREAKING, 3); // Unbreaking III
             mobEntity.equipStack(EquipmentSlot.MAINHAND, sword);
 
             // Enchant the helmet
-            ItemStack helmet = new ItemStack(Items.DIAMOND_HELMET);
+            final ItemStack helmet = new ItemStack(Items.DIAMOND_HELMET);
             helmet.addEnchantment(Enchantments.PROTECTION, 4); // Protection IV
             helmet.addEnchantment(Enchantments.RESPIRATION, 3); // Respiration III
             mobEntity.equipStack(EquipmentSlot.HEAD, helmet);
 
             // Enchant the chestplate
-            ItemStack chestplate = new ItemStack(Items.DIAMOND_CHESTPLATE);
+            final ItemStack chestplate = new ItemStack(Items.DIAMOND_CHESTPLATE);
             chestplate.addEnchantment(Enchantments.PROTECTION, 4); // Protection IV
             chestplate.addEnchantment(Enchantments.THORNS, 3); // Thorns III
             mobEntity.equipStack(EquipmentSlot.CHEST, chestplate);
 
             // Enchant the leggings
-            ItemStack leggings = new ItemStack(Items.DIAMOND_LEGGINGS);
+            final ItemStack leggings = new ItemStack(Items.DIAMOND_LEGGINGS);
             leggings.addEnchantment(Enchantments.PROTECTION, 4); // Protection IV
             mobEntity.equipStack(EquipmentSlot.LEGS, leggings);
 
             // Enchant the boots
-            ItemStack boots = new ItemStack(Items.DIAMOND_BOOTS);
+            final ItemStack boots = new ItemStack(Items.DIAMOND_BOOTS);
             boots.addEnchantment(Enchantments.PROTECTION, 4); // Protection IV
             boots.addEnchantment(Enchantments.FEATHER_FALLING, 4); // Feather Falling IV
             mobEntity.equipStack(EquipmentSlot.FEET, boots);

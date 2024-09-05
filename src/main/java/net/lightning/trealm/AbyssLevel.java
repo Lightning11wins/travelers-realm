@@ -112,7 +112,7 @@ public class AbyssLevel {
         final Random random = this.random;
         int combatRooms = random.nextInt(MIN_COMBAT_ROOMS, MAX_COMBAT_ROOMS);
         int trapRooms = random.nextInt(MIN_TRAP_ROOMS, MAX_TRAP_ROOMS);
-        int puzzleRooms = random.nextInt(MIN_LOOT_ROOMS, MAX_LOOT_ROOMS);
+        int lootRooms = random.nextInt(MIN_LOOT_ROOMS, MAX_LOOT_ROOMS);
 
         this.generateTile(new Coordinates(0, 0), Structure.Type.ROOM_START);
 
@@ -148,7 +148,7 @@ public class AbyssLevel {
             final Structure.Type[] types = {Structure.Type.HALLWAY, null, null, null};
             if (combatRooms > 0) types[i++] = Structure.Type.ROOM_COMBAT;
             if (trapRooms > 0) types[i++] = Structure.Type.ROOM_TRAP;
-            if (puzzleRooms > 0) types[i++] = Structure.Type.ROOM_LOOT;
+            if (lootRooms > 0) types[i++] = Structure.Type.ROOM_LOOT;
             if (i == 1) {
                 this.isValid = true;
                 this.hallwayDecay = INITIAL_HALLWAY_DECAY;
@@ -160,7 +160,7 @@ public class AbyssLevel {
             switch (type) {
                 case ROOM_COMBAT -> combatRooms--;
                 case ROOM_TRAP -> trapRooms--;
-                case ROOM_LOOT -> puzzleRooms--;
+                case ROOM_LOOT -> lootRooms--;
             }
 
             this.generateTile(coordinates, type);
