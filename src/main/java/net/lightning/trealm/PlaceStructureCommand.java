@@ -18,6 +18,7 @@ import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.text.Text;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
@@ -53,21 +54,24 @@ public class PlaceStructureCommand {
             for (int z = 0; z < level[0].length; z++) {
                 Tile currentTile = level[x][z];
                 if (currentTile != null) {
-                    BlockPos pos = new BlockPos(x * ROOM_SIZE, 200, z * ROOM_SIZE);
-                    PlaceStructureCommand.placeStructure(world, currentTile.structure.name, pos);
+                    int xTiles = x + ((currentTile.orientation.ordinal() + 1) / 2 % 2);
+                    int zTiles = z + (currentTile.orientation.ordinal() / 2 % 2);
+                    BlockPos pos = new BlockPos(ROOM_SIZE * xTiles, 200, ROOM_SIZE * zTiles);
+                    PlaceStructureCommand.placeStructure(world, currentTile.structure.name, pos, rotation);
                 }
             }
         }
         return abyssLevel.seed;
     }
 
-    public static int placeStructure(ServerWorld world, String structureId, BlockPos pos) {
+    public static int placeStructure(ServerWorld world, String structureId, BlockPos pos, BlockRotation rotation) {
         StructureTemplateManager structureManager = world.getStructureTemplateManager();
         Identifier structureIdentifier = new Identifier(MOD_NAMESPACE, structureId);
         StructureTemplate template = structureManager.getTemplate(structureIdentifier).orElse(null);
 
         if (template != null) {
             StructurePlacementData placementData = new StructurePlacementData();
+            placementData.setRotation(rotation);
             template.place(world, pos, pos, placementData, world.getRandom(), 2);
 
             return 1;
