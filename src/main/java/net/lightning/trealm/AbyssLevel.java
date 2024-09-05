@@ -302,7 +302,7 @@ public class AbyssLevel {
                 case ROOM_START -> sb.append("\u001B[32m");  // green
                 case ROOM_COMBAT -> sb.append("\u001B[31m"); // red
                 case ROOM_TRAP -> sb.append("\u001B[34m");   // blue
-                case ROOM_LOOT -> sb.append("\u001B[33m"); // yellow
+                case ROOM_LOOT -> sb.append("\u001B[33m");   // yellow
                 case ROOM_END -> sb.append("\u001B[35m");    // magenta
             }
 
@@ -396,7 +396,7 @@ public class AbyssLevel {
 //            genCount[type.ordinal() * 5 + entrances.ordinal()]++;
             final int roomCount = roomCounts[type.ordinal() * 5 + entrances.ordinal()];
             return new Structure(type, entrances, (roomCount == 0) ? "invalid" :
-                String.format("%s_%s_%d", type.toString().toLowerCase(), entrances.toString().toLowerCase(), random.nextInt(roomCount))
+                String.format("%s_%s_%d", type.toString().toLowerCase(), entrances.toString().toLowerCase(), random.nextInt(1, roomCount + 1))
             );
         }
     }
