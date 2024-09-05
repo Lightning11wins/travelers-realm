@@ -219,42 +219,6 @@ public class AbyssLevel {
         level.toGrid();
         return level;
     }
-    public static void main(String[] args) {
-        final long startTime = System.nanoTime();
-        AbyssLevel level = null;
-        for (int i = 0; i < 2048; i++) {
-            level = genLevel();
-        }
-        final long endTime = System.nanoTime();
-
-//        final int[] genCount = Structure.genCount;
-//        final int totalHallways = genCount[0] + genCount[1] + genCount[2] + genCount[3] + genCount[4];
-//        final int totalStartRooms = genCount[5] + genCount[6] + genCount[7] + genCount[8] + genCount[9];
-//        final int totalCombatRooms = genCount[10] + genCount[11] + genCount[12] + genCount[13] + genCount[14];
-//        final int totalLootRooms = genCount[15] + genCount[16] + genCount[17] + genCount[18] + genCount[19];
-//        final int totalTrapRooms = genCount[20] + genCount[21] + genCount[22] + genCount[23] + genCount[24];
-//        final int totalEndRooms = genCount[25] + genCount[26] + genCount[27] + genCount[28] + genCount[29];
-//        final float total = totalHallways + totalStartRooms + totalCombatRooms + totalLootRooms + totalTrapRooms + totalEndRooms;
-//
-//        final int total_4 = genCount[0] + genCount[5] + genCount[10] + genCount[15] + genCount[20];
-//        final int total_3 = genCount[1] + genCount[6] + genCount[11] + genCount[16] + genCount[21];
-//        final int total_s = genCount[2] + genCount[7] + genCount[12] + genCount[17] + genCount[22];
-//        final int total_t = genCount[3] + genCount[8] + genCount[13] + genCount[18] + genCount[23];
-//        final int total_1 = genCount[4] + genCount[9] + genCount[14] + genCount[19] + genCount[24];
-//
-//        StringBuilder sb = new StringBuilder("  4,     3,     s,     t,     1\n");
-//        Formatter formatter = new Formatter(sb);
-//        formatter.format("%05d, %05d, %05d, %05d, %05d : %.3f HALLWAY\n", genCount[0], genCount[1], genCount[2], genCount[3], genCount[4], totalHallways / total);
-//        formatter.format("%05d, %05d, %05d, %05d, %05d : %.3f ROOM_START\n", genCount[5], genCount[6], genCount[7], genCount[8], genCount[9], totalStartRooms / total);
-//        formatter.format("%05d, %05d, %05d, %05d, %05d : %.3f ROOM_COMBAT\n", genCount[10], genCount[11], genCount[12], genCount[13], genCount[14], totalCombatRooms / total);
-//        formatter.format("%05d, %05d, %05d, %05d, %05d : %.3f ROOM_LOOT\n", genCount[15], genCount[16], genCount[17], genCount[18], genCount[19], totalLootRooms / total);
-//        formatter.format("%05d, %05d, %05d, %05d, %05d : %.3f ROOM_TRAP\n", genCount[20], genCount[21], genCount[22], genCount[23], genCount[24], totalTrapRooms / total);
-//        formatter.format("%05d, %05d, %05d, %05d, %05d : %.3f ROOM_END\n", genCount[25], genCount[26], genCount[27], genCount[28], genCount[29], totalEndRooms / total);
-//        formatter.format("%.3f, %.3f, %.3f, %.3f, %.3f\n", total_4 / total, total_3 / total, total_s / total, total_t / total, total_1 / total);
-//        sb.append(stringifyGrid(level.toGrid(), level)).append('\n');
-//        formatter.format("Execution time: %.4f milliseconds\n", (double) (endTime - startTime) / 1_000_000);
-//        System.out.print(sb);
-    }
 
     public static class Tile {
         public final Orientation orientation;
@@ -372,16 +336,6 @@ public class AbyssLevel {
             0, 0, 0, 0, 0, // ROOM_END
         };
 
-//        public static final int[] genCount = {
-//            // 4, 3, s, t, 1
-//            0, 0, 0, 0, 0, // HALLWAY
-//            0, 0, 0, 0, 0, // ROOM_START
-//            0, 0, 0, 0, 0, // ROOM_COMBAT
-//            0, 0, 0, 0, 0, // ROOM_LOOT
-//            0, 0, 0, 0, 0, // ROOM_TRAP
-//            0, 0, 0, 0, 0, // ROOM_END
-//        };
-
         public final Type type;
         public final Entrances entrances;
         public final String name;
@@ -393,7 +347,6 @@ public class AbyssLevel {
         }
 
         public static Structure random(Type type, Entrances entrances, Random random) {
-//            genCount[type.ordinal() * 5 + entrances.ordinal()]++;
             final int roomCount = roomCounts[type.ordinal() * 5 + entrances.ordinal()];
             return new Structure(type, entrances, (roomCount == 0) ? "invalid" :
                 String.format("%s_%s_%d", type.toString().toLowerCase(), entrances.toString().toLowerCase(), random.nextInt(1, roomCount + 1))
