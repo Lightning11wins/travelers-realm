@@ -48,17 +48,20 @@ public class PlaceStructureCommand {
     }
 
     public static long placeAbyssLevel(ServerWorld world) {
+        return placeAbyssLevel(world, new BlockPos(0, 200, 0));
+    }
+    public static long placeAbyssLevel(ServerWorld world, BlockPos origin) {
         final AbyssLevel abyssLevel = AbyssLevel.genLevel();
         final AbyssLevel.Tile[][] level = abyssLevel.toGrid();
 
-        for (int x = 0; x < level.length; x++){
-            for (int z = 0; z < level[0].length; z++) {
-                final AbyssLevel.Tile currentTile = level[x][z];
+        for (int x = level.length - 1; x >= 0; x--) {
+            final AbyssLevel.Tile[] row = level[x];
+            for (int i = level[0].length - 1, z = 0; i >= 0; i--, z++) {
+                final AbyssLevel.Tile currentTile = row[i];
                 if (currentTile != null) {
-                    final int direction = currentTile.orientation.ordinal();
-                    final int xTiles = x + ((direction + 1) / 2 % 2);
-                    final int zTiles = z + (direction / 2 % 2);
-                    final BlockPos pos = new BlockPos(PlaceStructureCommand.ROOM_SIZE * xTiles, 200, PlaceStructureCommand.ROOM_SIZE * zTiles);
+                    final int direction = currentTile.orientation.ordinal(), roomSize = PlaceStructureCommand.ROOM_SIZE;
+                    final int offsetX = ((direction + 1) / 2 % 2), offsetZ = (direction / 2 % 2);
+                    final BlockPos pos = origin.add(roomSize * (x + offsetX) - offsetX, 0, roomSize * (z + offsetZ) - offsetZ);
                     final BlockRotation blockRotation = switch (currentTile.orientation) {
                         case UP, UP_FLIPPED -> NONE;
                         case RIGHT, LEFT_FLIPPED -> CLOCKWISE_90;
