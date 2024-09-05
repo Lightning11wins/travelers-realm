@@ -366,9 +366,9 @@ public class AbyssLevel {
          // 4, 3, s, t, 1
             1, 1, 3, 1, 2, // HALLWAY
             0, 0, 0, 0, 0, // ROOM_START
-            4, 0, 0, 0, 0, // ROOM_COMBAT
+            4, 1, 1, 1, 1, // ROOM_COMBAT
             2, 0, 0, 0, 0, // ROOM_LOOT
-            0, 0, 0, 0, 0, // ROOM_TRAP
+            1, 1, 1, 1, 1, // ROOM_TRAP
             0, 0, 0, 0, 0, // ROOM_END
         };
 
