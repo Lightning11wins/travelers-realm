@@ -89,6 +89,44 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
         .statusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 200), 1)
         .build()
     )).identifier("dish_wanderer").texture("item/food/dish_wanderer").displayName("Shimi Chazuke").build().addTo(FOOD_ITEMS);
+    public static final ItemRegistration DRINK_FONTA = new ItemRegistration.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(2)
+        .saturationModifier(1f)
+        .statusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200), 1)
+        .build()
+    )).identifier("drink_fonta").texture("item/food/drink_fonta").displayName("Fonta").build().addTo(FOOD_ITEMS);
+    public static final ItemRegistration DISH_GARLIC_BAGUETTE = new ItemRegistration.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(4)
+        .saturationModifier(1f)
+        .statusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 300), 1)
+        .build()
+    )).identifier("dish_garlic_baguette").texture("item/food/dish_garlic_baguette").displayName("Garlic Baguette").build().addTo(FOOD_ITEMS);
+    public static final ItemRegistration GOLDEN_TEMPTATION = new ItemRegistration.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(4)
+        .snack()
+        .saturationModifier(1f)
+        .statusEffect(new StatusEffectInstance(StatusEffects.HASTE, 400,2), 1)
+        .build()
+    )).identifier("golden_temptation").texture("item/food/golden_temptation").displayName("Golden Temptation").build().addTo(FOOD_ITEMS);
+    public static final ItemRegistration DISH_PADISARAH_PUDDING = new ItemRegistration.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(3)
+        .saturationModifier(1f)
+        .statusEffect(new StatusEffectInstance(StatusEffects.HASTE, 400,1), 1)
+        .snack()
+        .build()
+    )).identifier("dish_padisarah_pudding").texture("item/food/dish_padisarah_pudding").displayName("Padisarah Pudding").build().addTo(FOOD_ITEMS);
+    public static final ItemRegistration DRINK_RAINBOW_ASTER = new ItemRegistration.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(3)
+        .saturationModifier(1f)
+        .statusEffect(new StatusEffectInstance(StatusEffects.SPEED, 400,1), 1)
+        .build()
+    )).identifier("drink_rainbow_aster").texture("item/food/drink_rainbow_aster").displayName("Rainbow Aster").build().addTo(FOOD_ITEMS);
+    public static final ItemRegistration DISH_SHAWARMA_WRAP = new ItemRegistration.Builder(new FabricItemSettings().food(new FoodComponent.Builder()
+        .hunger(6)
+        .saturationModifier(1f)
+        .statusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 200), 1)
+        .build()
+    )).identifier("dish_shawarma_wrap").texture("item/food/dish_shawarma_wrap").displayName("Shawarma Wrap").build().addTo(FOOD_ITEMS);
 
     public static final ItemRegistration ALMOND = new ItemRegistration.Builder().identifier("almond").texture("item/food/almond").displayName("Almonds").build().addTo(INGREDIENT_ITEMS);
     public static final ItemRegistration CRAB = new ItemRegistration.Builder().identifier("crab").texture("item/food/crab").displayName("Crab").build().addTo(INGREDIENT_ITEMS);
