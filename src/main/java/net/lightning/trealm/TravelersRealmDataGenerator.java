@@ -94,6 +94,7 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
     public static final ItemRegistration CRAB = new ItemRegistration.Builder().identifier("crab").texture("item/food/crab").displayName("Crab").build().addTo(INGREDIENT_ITEMS);
     public static final ItemRegistration SHRIMP = new ItemRegistration.Builder().identifier("shrimp").texture("item/food/shrimp").displayName("Shrimp").build().addTo(INGREDIENT_ITEMS);
 
+    public static final ItemRegistration GEM_CUTTER = new ItemRegistration.Builder().identifier("gem_cutter").texture("item/gem_cutter").displayName("Gem Cutter").build().addTo(INGREDIENT_ITEMS);
     public static final ItemRegistration ELEMENTAL_INGOT = new ItemRegistration.Builder().identifier("elemental_ingot").texture("item/elemental_ingot").displayName("Elemental Ingot").build().addTo(INGREDIENT_ITEMS);
     public static final ItemRegistration ELEMENTAL_NUGGET = new ItemRegistration.Builder().identifier("elemental_nugget").texture("item/elemental_nugget").displayName("Elemental Nugget").build().addTo(INGREDIENT_ITEMS);
     public static final ItemRegistration RAW_ELEMENTAL_ORE = new ItemRegistration.Builder().identifier("raw_elemental_ore").texture("item/raw_elemental_ore").displayName("Raw Elemental Ore").build().addTo(INGREDIENT_ITEMS);
@@ -280,6 +281,16 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
                 .criterion(hasItem(ELEMENTAL_INGOT), conditionsFromItem(ELEMENTAL_INGOT))
                 .offerTo(exporter, new Identifier(MOD_NAMESPACE, "vision_frame"));
 
+            ShapedRecipeJsonBuilder.create(combat, GEM_CUTTER, 1)
+                .pattern("  .")
+                .pattern(" i ")
+                .pattern("i  ")
+                .input('i', ELEMENTAL_INGOT)
+                .input('.', ELEMENTAL_NUGGET)
+                .criterion(hasItem(ELEMENTAL_INGOT), conditionsFromItem(ELEMENTAL_INGOT))
+                .criterion(hasItem(ELEMENTAL_NUGGET), conditionsFromItem(ELEMENTAL_NUGGET))
+                .offerTo(exporter, new Identifier(MOD_NAMESPACE, "gem_setter"));
+
             this.offerReversibleCompactingRecipes(exporter, misc, ELEMENTAL_NUGGET, ELEMENTAL_INGOT);
             this.offerReversibleCompactingRecipes(exporter, misc, ELEMENTAL_INGOT, ELEMENTAL_BLOCK);
             this.offerReversibleCompactingRecipes(exporter, misc, RAW_ELEMENTAL_ORE, RAW_ELEMENTAL_BLOCK);
@@ -291,7 +302,7 @@ public class TravelersRealmDataGenerator implements DataGeneratorEntrypoint {
             for (final VisionItemRegistration vision : VisionItemRegistration.VISION_ITEM_REGISTRATIONS) {
                 final ItemRegistration frame = vision.frame.itemRegistration, gem = vision.gem.itemRegistration;
                 SmithingTransformRecipeJsonBuilder.create(
-                        Ingredient.ofItems(),
+                        Ingredient.ofItems(GEM_CUTTER),
                         Ingredient.ofItems(frame),
                         Ingredient.ofItems(gem),
                         combat,
